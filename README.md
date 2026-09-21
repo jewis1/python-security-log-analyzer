@@ -10,17 +10,24 @@ V.01:
 -Includes sample authentication log data 
 ## Technologies (WBU)
 -Python
+
 -Git
+
 -GitHub
 ## Current Status
 This project is in demonstration (demo) mode; as time progresses, I will continue learning Python and security engineering as a whole. 
 ## Planned Improvements
 Future versions will revolve around:
 -Reading login events from a file
+
 -Counting repeated failed login attempts
+
 -Tracking source IP addresses
+
 -Detecting potential brute-force activity
+
 -Assigning alert severity levels
+
 -Generating security reports
 ## Author
 Jehad Ewis 
