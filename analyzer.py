@@ -4,5 +4,6 @@ def check_login(status):
   else:
     print("Login successful.")
 
-login_status = "FAILED"
-check_login(login_status)
+login_status = ["SUCCESS", "FAILED", "FAILED", "FAILED", "FAILED"]
+for status in login_statuses:
+check_login(status)
