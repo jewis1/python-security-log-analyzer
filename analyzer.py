@@ -11,8 +11,11 @@ with open("sample_logs/login.log", "r") as log_file:
     if "LOGIN_FAILED" in line:
       parts = line.split()
       username = parts[3]
+      source_ip = parts[4]
       failed_count = failed_count + 1
       print("Failed login user:", username)
+      print("Source IP:", source_ip)
+      
       check_login("FAILED")
    
     elif "LOGIN_SUCCESS" in line:
