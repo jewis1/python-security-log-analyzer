@@ -1,3 +1,5 @@
+from pathlib import Path
+
 def check_login(status):
   if status == "FAILED":
     print("Security Alert: Failed login detected.")
@@ -6,7 +8,9 @@ def check_login(status):
     
 failed_count = 0
 
-with open("sample_logs/login.log", "r") as log_file:
+log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
+
+with open(log_path, "r") as log_file:
   for line in log_file:
     if "LOGIN_FAILED" in line:
       parts = line.split()
