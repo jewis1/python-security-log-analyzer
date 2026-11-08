@@ -7,6 +7,7 @@ def check_login(status):
     print("Login successful.")
     
 failed_count = 0
+failed_by_ip = {}
 
 log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
 
@@ -16,6 +17,10 @@ with open(log_path, "r") as log_file:
       parts = line.split()
       username = parts[3]
       source_ip = parts[4]
+      if source_ip in failed_by_ip:
+        failed_by_ip[source_ip] += 1
+      else: 
+        failed_by_ip[source_ip] = 1
       failed_count = failed_count + 1
       print("Failed login user:", username)
       print("Source IP:", source_ip)
@@ -26,3 +31,7 @@ with open(log_path, "r") as log_file:
         check_login("SUCCESS")
       
 print("Total failed login attempts:", failed_count)
+print("\nFailed login attempts by IP:")
+
+for ip, count in failed_by_ip.items():
+  print(f"IP: {ip}, Count: {count}")
