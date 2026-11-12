@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime
 
 def check_login(status):
   if status == "FAILED":
@@ -15,6 +16,8 @@ with open(log_path, "r") as log_file:
   for line in log_file:
     if "LOGIN_FAILED" in line:
       parts = line.split()
+      timestamp_text = parts[0] + " " + parts[1]
+      timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
       username = parts[3]
       source_ip = parts[4]
       if source_ip in failed_by_ip:
@@ -24,6 +27,7 @@ with open(log_path, "r") as log_file:
       failed_count = failed_count + 1
       print("Failed login user:", username)
       print("Source IP:", source_ip)
+      print(f"Timestamp: {timestamp}")
       
       check_login("FAILED")
    
