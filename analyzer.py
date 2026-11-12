@@ -44,3 +44,8 @@ for ip, count in failed_by_ip.items():
 
   if count >= threshold: 
     print(f"Security Alert: IP {ip} has exceeded the threshold of {threshold} failed login attempts.")
+
+first_attempt = datetime.strptime("2026-09-20 10:03:21", "%Y-%m-%d %H:%M:%S")
+last_attempt = datetime.strptime("2026-09-20 10:03:34", "%Y-%m-%d %H:%M:%S") 
+elasped_time = last_attempt - first_attempt
+print(f"\nElapsed time between first and last failed login attempt: {elasped_time}")
