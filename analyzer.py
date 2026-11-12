@@ -29,9 +29,14 @@ with open(log_path, "r") as log_file:
    
     elif "LOGIN_SUCCESS" in line:
         check_login("SUCCESS")
-      
+
 print("Total failed login attempts:", failed_count)
 print("\nFailed login attempts by IP:")
 
+threshold = 3
+
 for ip, count in failed_by_ip.items():
   print(f"IP: {ip}, Count: {count}")
+
+  if count >= threshold: 
+    print(f"Security Alert: IP {ip} has exceeded the threshold of {threshold} failed login attempts.")
