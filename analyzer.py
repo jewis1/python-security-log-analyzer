@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def check_login(status):
   if status == "FAILED":
@@ -38,9 +38,14 @@ with open(log_path, "r") as log_file:
       for ip, timestamps in failed_times_by_ip.items():      
         print(f"IP: {ip}, Timestamps: {timestamps}")
 
+        window = timedelta(minutes=5)
+        timestamps = sorted(timestamps)
         elapsed_times = timestamps[-1] - timestamps[0]
         print(f"\nElapsed time between first and last failed Login attempt for IP {ip}: {elapsed_times}")
-        
+
+        if elapsed_times <= window and len(timestamps) >= 3:
+          print(f"Security Alert: IP {ip} has exceeded the threshold of 3 failed login attempts within 5 minutes.")
+
       check_login("FAILED")
    
     elif "LOGIN_SUCCESS" in line:
@@ -55,9 +60,4 @@ for ip, count in failed_by_ip.items():
   print(f"IP: {ip}, Count: {count}")
 
   if count >= threshold: 
-    print(f"Security Alert: IP {ip} has exceeded the threshold of {threshold} failed login attempts.")
-
-first_attempt = datetime.strptime("2026-09-20 10:03:21", "%Y-%m-%d %H:%M:%S")
-last_attempt = datetime.strptime("2026-09-20 10:03:34", "%Y-%m-%d %H:%M:%S") 
-elapsed_time = last_attempt - first_attempt
-print(f"\nElapsed time between first and last failed login attempt: {elapsed_time}")
+    print(f"Security Alert: IP {ip} has reached or exceeded the threshold of {threshold} failed login attempts.")
