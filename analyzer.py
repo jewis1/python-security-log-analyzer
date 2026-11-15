@@ -54,10 +54,15 @@ with open(log_path, "r") as log_file:
 print("Total failed login attempts:", failed_count)
 print("\nFailed login attempts by IP:")
 
+window = timedelta(minutes=5)
 threshold = 3
 
-for ip, count in failed_by_ip.items():
-  print(f"IP: {ip}, Count: {count}")
+for ip, timestamps in failed_times_by_ip.items():
+  timestamps = sorted(timestamps)
 
-  if count >= threshold: 
-    print(f"Security Alert: IP {ip} has reached or exceeded the threshold of {threshold} failed login attempts.")
+  if len(timestamps) >= threshold: 
+
+      for i in range(len(timestamps) - 2):
+          if timestamps[i + 2] - timestamps[i] <= window:
+              print(f"Security Alert: IP {ip} has exceeded the threshold of {threshold} failed login attempts within 5 minutes.")
+              break
