@@ -33,18 +33,7 @@ with open(log_path, "r") as log_file:
       print("Failed login user:", username)
       print("Source IP:", source_ip)
       print(f"Timestamp: {timestamp}")
-      print("\nFailed login attempts by IP:", failed_by_ip)
-
-      for ip, timestamps in failed_times_by_ip.items():      
-        print(f"IP: {ip}, Timestamps: {timestamps}")
-
-        window = timedelta(minutes=5)
-        timestamps = sorted(timestamps)
-        elapsed_times = timestamps[-1] - timestamps[0]
-        print(f"\nElapsed time between first and last failed Login attempt for IP {ip}: {elapsed_times}")
-
-        if elapsed_times <= window and len(timestamps) >= 3:
-          print(f"Security Alert: IP {ip} has exceeded the threshold of 3 failed login attempts within 5 minutes.")
+      print("\nFive-minute security alerts:", failed_by_ip)
 
       check_login("FAILED")
    
@@ -52,7 +41,7 @@ with open(log_path, "r") as log_file:
         check_login("SUCCESS")
 
 print("Total failed login attempts:", failed_count)
-print("\nFailed login attempts by IP:")
+print("\nFive-minute security alerts:")
 
 window = timedelta(minutes=5)
 threshold = 3
@@ -62,7 +51,7 @@ for ip, timestamps in failed_times_by_ip.items():
 
   if len(timestamps) >= threshold: 
 
-      for i in range(len(timestamps) - 2):
-          if timestamps[i + 2] - timestamps[i] <= window:
-              print(f"Security Alert: IP {ip} has exceeded the threshold of {threshold} failed login attempts within 5 minutes.")
-              break
+      for i in range(len(timestamps) - threshold + 1):
+        if timestamps[i + threshold - 1] - timestamps[i] <= window:
+            print(f"Security Alert: IP {ip} has reached or exceeded the threshold of {threshold} failed login attempts within 5 minutes.")
+            break
