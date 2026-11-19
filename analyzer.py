@@ -33,7 +33,7 @@ with open(log_path, "r") as log_file:
       print("Failed login user:", username)
       print("Source IP:", source_ip)
       print(f"Timestamp: {timestamp}")
-      print("\nFive-minute security alerts:", failed_by_ip)
+      print("Total failed login attempts:", failed_count)
 
       check_login("FAILED")
    
@@ -46,12 +46,14 @@ print("\nFive-minute security alerts:")
 window = timedelta(minutes=5)
 threshold = 3
 
-for ip, timestamps in failed_times_by_ip.items():
-  timestamps = sorted(timestamps)
+def detect_brute_force(failed_times_by_ip, threshold, window):
+  for ip, timestamps in failed_times_by_ip.items():
+    timestamps = sorted(timestamps)
 
-  if len(timestamps) >= threshold: 
-
+    if len(timestamps) >= threshold:
       for i in range(len(timestamps) - threshold + 1):
         if timestamps[i + threshold - 1] - timestamps[i] <= window:
-            print(f"Security Alert: IP {ip} has reached or exceeded the threshold of {threshold} failed login attempts within 5 minutes.")
-            break
+          print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
+          break
+
+detect_brute_force(failed_times_by_ip, threshold, window)
