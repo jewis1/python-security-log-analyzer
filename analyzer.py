@@ -56,4 +56,11 @@ def detect_brute_force(failed_times_by_ip, threshold, window):
           print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
           break
 
+def display_summary(failed_count, failed_by_ip):
+  print("\nSummary of failed login attempts:")
+  print(f"Total failed login attempts: {failed_count}")
+  print("Failed login attempts by source IP:")
+  for ip, count in failed_by_ip.items():
+    print(f"{ip}: {count}")
+
 detect_brute_force(failed_times_by_ip, threshold, window)
