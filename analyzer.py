@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -14,13 +15,38 @@ def parse_logs(log_path):
     failed_by_ip = {}
     failed_times_by_ip = {}
 
+    # V1.2A: Missing-file exception handling
     if not log_path.exists():
         raise FileNotFoundError(f"Log file not found: {log_path}")
 
     with open(log_path, "r") as log_file:
         for line in log_file:
-            if "LOGIN_FAILED" in line:
-                parts = line.split()
+
+            # V1.2B-A: Remove leading and trailing whitespace
+            line = line.strip()
+
+            # V1.2B-A: Ignore blank lines and comments
+            if not line or line.startswith("#"):
+                continue
+
+            # V1.2B-B: Split the authentication record
+            parts = line.split()
+
+            # V1.2B-B: Validate the number of fields
+            if len(parts) != 5:
+                print(f"Malformed log entry: {line}")
+                continue
+
+            # V1.2B-C: Extract the authentication event
+            event_type = parts[2]
+
+            # V1.2B-C: Reject unrecognized authentication events
+            if event_type != "LOGIN_FAILED" and event_type != "LOGIN_SUCCESS":
+                print(f"Unrecognized authentication event: {line}")
+                continue
+
+            # V1.2B-D: Process failed authentication attempts
+            if event_type == "LOGIN_FAILED":
                 timestamp_text = parts[0] + " " + parts[1]
                 timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
                 username = parts[3]
@@ -44,7 +70,8 @@ def parse_logs(log_path):
 
                 check_login("FAILED")
 
-            elif "LOGIN_SUCCESS" in line:
+            # V1.2B-D: Process successful authentication attempts
+            elif event_type == "LOGIN_SUCCESS":
                 check_login("SUCCESS")
 
     return failed_count, failed_by_ip, failed_times_by_ip
@@ -84,7 +111,7 @@ def main():
     except FileNotFoundError as error:
         print(error)
         return
-    
+
     # Display authentication statistics
     display_summary(failed_count, failed_by_ip)
 
