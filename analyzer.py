@@ -15,8 +15,7 @@ def parse_logs(log_path):
     failed_times_by_ip = {}
 
     if not log_path.exists():
-        print(f"Log file not found: {log_path}")
-        return failed_count, failed_by_ip, failed_times_by_ip
+        raise FileNotFoundError(f"Log file not found: {log_path}")
 
     with open(log_path, "r") as log_file:
         for line in log_file:
@@ -80,8 +79,12 @@ def main():
     log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
 
     # Parse authentication logs
-    failed_count, failed_by_ip, failed_times_by_ip = parse_logs(log_path)
-
+    try:
+        failed_count, failed_by_ip, failed_times_by_ip = parse_logs(log_path)
+    except FileNotFoundError as error:
+        print(error)
+        return
+    
     # Display authentication statistics
     display_summary(failed_count, failed_by_ip)
 
