@@ -8,6 +8,22 @@
 # WORKING DIRECTORY:
 # Run the commands from the project's sample_logs folder.
 
+# ---------------------------------------------------------------------------
+# 1. INSPECT THE SAMPLE-LOGS FOLDER
+# ---------------------------------------------------------------------------
+
+# List files in the current folder. Confirms login.log exists and helps
+# identify unexpected filenames or temporary test files.
+# Get-ChildItem
+
+# Display login.log without modifying it. Useful for inspecting timestamps,
+# event types, usernames, and source IP addresses.
+# Get-Content login.log
+
+# ---------------------------------------------------------------------------
+# 2. CHECK FILE INTEGRITY
+# ---------------------------------------------------------------------------
+
 # Calculate hashes for the active log and backup. This compares file
 # contents without opening them in an editor or changing them.
 # Get-FileHash login.log, login_backup.log
