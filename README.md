@@ -29,5 +29,11 @@ Future versions will revolve around:
 -Assigning alert severity levels
 
 -Generating security reports
+
+## Development & Testing Resources
+PowerShell_Command_Referencs.ps1
+
+- Responsible for file documentation for PowerShell executables for log file inspection, verifying file integrity, executing analyzer.py for each change commit, and test error handling. 
+
 ## Author
 Jehad Ewis 
