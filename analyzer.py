@@ -45,10 +45,20 @@ def parse_logs(log_path):
                 print(f"Unrecognized authentication event: {line}")
                 continue
 
+            # V1.2B-C: Construct the timestamp string
+            timestamp_text = parts[0] + " " + parts[1]
+
+            # V1.2C-B: Validate the timestamp format
+            try:
+                timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
+
+            except ValueError as error:
+                #V1.2C-B: Reject invalid timestamp formats
+                print(f"Invalid timestamp format: {timestamp_text} - {error}")
+                continue
+
             # V1.2B-D: Process failed authentication attempts
             if event_type == "LOGIN_FAILED":
-                timestamp_text = parts[0] + " " + parts[1]
-                timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
                 username = parts[3]
                 source_ip = parts[4]
 
@@ -121,4 +131,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  
