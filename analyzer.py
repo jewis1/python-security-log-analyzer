@@ -2,6 +2,21 @@
 from pathlib import Path
 from datetime import datetime, timedelta
 
+def validate_config(threshold, window):
+    #V1.2E:Validate configuration parameters
+    if not isinstance(threshold, int) or isinstance(threshold, bool):
+        raise ValueError("Threshold must be a positive integer.")
+
+    if threshold <= 0:
+        raise ValueError("Threshold must be greater than zero.")
+
+    #V1.2E: Validate detection time window and threshold values
+    if not isinstance(window, timedelta):
+        raise ValueError("Detection window must be a timedelta object.")
+
+    if window <= timedelta(0):
+        raise ValueError("Detection time window must be greater than zero.")
+
 
 def check_login(status):
     if status == "FAILED":
@@ -111,6 +126,14 @@ def main():
     # Configuration variables
     window = timedelta(minutes=5)
     threshold = 3
+
+    #V1.2E: Validate configuration parameters/settings
+    try:
+        validate_config(threshold, window)
+
+    except ValueError as error: 
+        print(f"Configuration error: {error}")
+        return
 
     # Establish log file path
     log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
