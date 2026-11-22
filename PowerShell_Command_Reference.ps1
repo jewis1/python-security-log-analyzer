@@ -1,3 +1,13 @@
+# PowerShell Command Reference — Python Security Log Analyzer
+#
+# READ THIS FIRST:
+# This is a reference sheet, NOT a script to run from top to bottom.
+# All commands are commented out. Copy and run only the individual
+# commands you need.
+#
+# WORKING DIRECTORY:
+# Run the commands from the project's sample_logs folder.
+
 # Calculate hashes for the active log and backup. This compares file
 # contents without opening them in an editor or changing them.
 # Get-FileHash login.log, login_backup.log
@@ -83,4 +93,3 @@
 #
 # Do not use Remove-Item on login.log or login_backup.log.
 # Keep the original sample dataset intact as a regression-test baseline.
-
