@@ -96,7 +96,7 @@
 
 
 # ---------------------------------------------------------------------------
-# SAFETY NOTES
+# 6. SAFETY NOTES
 # ---------------------------------------------------------------------------
 
 # Get-ChildItem, Get-Content, and Get-FileHash are inspection commands;
