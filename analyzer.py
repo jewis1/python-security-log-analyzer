@@ -123,12 +123,16 @@ def main():
         print(error)
         return
 
-    except Exception as error:
-        print(f"An unexpected error occured while parsing logs: {error}")
+    except PermissionError as error:
+        print(f"Permission denied: {error}")
         return
 
     except OSError as error:
-        print(f"An OS error occured while parsing logs: {error}")
+        print(f"Unable to access log file: {error}")
+        return
+
+    except Exception as error:
+        print(f"An unexpected error occurred while parsing logs: {error}")
         return
 
     # Display authentication statistics
