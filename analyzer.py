@@ -118,8 +118,17 @@ def main():
     # Parse authentication logs
     try:
         failed_count, failed_by_ip, failed_times_by_ip = parse_logs(log_path)
+
     except FileNotFoundError as error:
         print(error)
+        return
+
+    except Exception as error:
+        print(f"An unexpected error occured while parsing logs: {error}")
+        return
+
+    except OSError as error:
+        print(f"An OS error occured while parsing logs: {error}")
         return
 
     # Display authentication statistics
