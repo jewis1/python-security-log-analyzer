@@ -1,6 +1,7 @@
 
 from pathlib import Path
 from datetime import datetime, timedelta
+import argparse
 
 def validate_config(threshold, window):
     #V1.2E:Validate configuration parameters
@@ -123,6 +124,12 @@ def display_summary(failed_count, failed_by_ip):
 
 
 def main():
+    #V1.3A: Initialize argument parser (CLI)
+    parser = argparse.ArgumentParser(description="Python Security Log Analyzer")
+
+    #V1.3A: Parse command-line arguments
+    args = parser.parse_args()
+
     # Configuration variables
     window = timedelta(minutes=5)
     threshold = 3
