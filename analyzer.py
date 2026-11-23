@@ -127,12 +127,21 @@ def main():
     #V1.3A: Initialize argument parser (CLI)
     parser = argparse.ArgumentParser(description="Python Security Log Analyzer")
 
+    #V1.3B: Define the brute-force detection threshold 
+    parser.add_argument("--threshold", type=int, default=3)
+
+    #V1.3B: Define the detection time window (in minutes)
+    parser.add_argument("--window", type=int, default=5)
+
+    #V1.3B: Define the input log file path (optional)   
+    parser.add_argument("--file", type=str, default=None)
+
     #V1.3A: Parse command-line arguments
     args = parser.parse_args()
 
     # Configuration variables
-    window = timedelta(minutes=5)
-    threshold = 3
+    window = timedelta(minutes=args.window)
+    threshold = args.threshold
 
     #V1.2E: Validate configuration parameters/settings
     try:
@@ -142,8 +151,11 @@ def main():
         print(f"Configuration error: {error}")
         return
 
-    # Establish log file path
-    log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
+    # V1.3B: Establish log file path from CLI
+    if args.file:
+        log_path = Path(args.file)
+    else:
+        log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log" 
 
     # Parse authentication logs
     try:
@@ -169,7 +181,7 @@ def main():
     display_summary(failed_count, failed_by_ip)
 
     # Execute brute force detection
-    print("\nFive-minute brute force detection:")
+    print(f"\n{args.window}-minute brute force detection:")
     detect_brute_force(failed_times_by_ip, threshold, window)
 
 
