@@ -140,16 +140,21 @@ def main():
     args = parser.parse_args()
 
     # Configuration variables
-    window = timedelta(minutes=args.window)
     threshold = args.threshold
 
-    #V1.2E: Validate configuration parameters/settings
+    # V1.3C-D: Handle excessive detection window values
     try:
+        window = timedelta(minutes=args.window)
         validate_config(threshold, window)
 
-    except ValueError as error: 
+    # V1.3C-E: Return failure exit codes
+    except OverflowError:
+        print("Configuration error: Detection time window is too large.")
+        return 1
+
+    except ValueError as error:
         print(f"Configuration error: {error}")
-        return
+        return 1
 
     # V1.3B: Establish log file path from CLI
     if args.file:
@@ -163,19 +168,19 @@ def main():
 
     except FileNotFoundError as error:
         print(error)
-        return
+        return 1
 
     except PermissionError as error:
         print(f"Permission denied: {error}")
-        return
+        return 1
 
     except OSError as error:
         print(f"Unable to access log file: {error}")
-        return
+        return 1
 
     except Exception as error:
         print(f"An unexpected error occurred while parsing logs: {error}")
-        return
+        return 1
 
     # Display authentication statistics
     display_summary(failed_count, failed_by_ip)
@@ -184,6 +189,9 @@ def main():
     print(f"\n{args.window}-minute brute force detection:")
     detect_brute_force(failed_times_by_ip, threshold, window)
 
+    # V1.3C-E: Indicate successful execution
+    return 0
 
+# V2.3C-E: Communicate process exit status
 if __name__ == "__main__":
-    main()  
+    raise SystemExit(main())
