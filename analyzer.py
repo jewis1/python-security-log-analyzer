@@ -102,16 +102,22 @@ def parse_logs(log_path):
 
     return failed_count, failed_by_ip, failed_times_by_ip
 
-
 def detect_brute_force(failed_times_by_ip, threshold, window):
+    #V1.4B-A: Store detected brute-force source IPs
+    detected_ips = []
     for ip, timestamps in failed_times_by_ip.items():
         timestamps = sorted(timestamps)
 
         if len(timestamps) >= threshold:
             for i in range(len(timestamps) - threshold + 1):
-                if timestamps[i + threshold - 1] - timestamps[i] <= window: 
+                if timestamps[i + threshold - 1] - timestamps[i] <= window:
+                    #V1.4B-A: Record detected brute-force source IP
+                    detected_ips.append(ip)
                     print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
+                    detected_ips.append(ip)
                     break
+
+    return detected_ips
 
 
 def display_summary(failed_count, failed_by_ip):
@@ -122,13 +128,12 @@ def display_summary(failed_count, failed_by_ip):
     for ip, count in failed_by_ip.items():
         print(f"{ip}: {count}")
 
-
 def main():
     #V1.3A: Initialize argument parser (CLI)
     parser = argparse.ArgumentParser(description="Python Security Log Analyzer")
 
     #V1.3B: Define the brute-force detection threshold 
-    parser.add_argument("--threshold", type=int, default=3
+    parser.add_argument("--threshold", type=int, default=3,
                         help="Failed login threshold (default: 3)")
 
     #V1.3B: Define the detection time window (in minutes)
