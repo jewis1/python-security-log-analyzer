@@ -3,15 +3,16 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import argparse
 
+
 def validate_config(threshold, window):
-    #V1.2E:Validate configuration parameters
+    # V1.2E: Validate configuration parameters
     if not isinstance(threshold, int) or isinstance(threshold, bool):
         raise ValueError("Threshold must be a positive integer.")
 
     if threshold <= 0:
         raise ValueError("Threshold must be greater than zero.")
 
-    #V1.2E: Validate detection time window and threshold values
+    # V1.2E: Validate detection time window and threshold values
     if not isinstance(window, timedelta):
         raise ValueError("Detection window must be a timedelta object.")
 
@@ -69,7 +70,7 @@ def parse_logs(log_path):
                 timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
 
             except ValueError as error:
-                #V1.2C-B: Reject invalid timestamp formats
+                # V1.2C-B: Reject invalid timestamp formats
                 print(f"Invalid timestamp format: {timestamp_text} - {error}")
                 continue
 
@@ -102,22 +103,30 @@ def parse_logs(log_path):
 
     return failed_count, failed_by_ip, failed_times_by_ip
 
+
 def detect_brute_force(failed_times_by_ip, threshold, window):
-    #V1.4B-A: Store detected brute-force source IPs
+    # V1.4B-A: Store detected brute-force source IPs
     detected_ips = []
+
     for ip, timestamps in failed_times_by_ip.items():
         timestamps = sorted(timestamps)
 
         if len(timestamps) >= threshold:
             for i in range(len(timestamps) - threshold + 1):
                 if timestamps[i + threshold - 1] - timestamps[i] <= window:
-                    #V1.4B-A: Record detected brute-force source IP
-                    detected_ips.append(ip)
-                    print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
+
+                    # V1.4B-A: Record detected brute-force source IP
                     detected_ips.append(ip)
                     break
 
+    # V1.4B-A: Return collected detection results
     return detected_ips
+
+
+# V1.4B-B: Display detected brute-force security alerts
+def display_alerts(detected_ips):
+    for ip in detected_ips:
+        print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
 
 
 def display_summary(failed_count, failed_by_ip):
@@ -128,23 +137,24 @@ def display_summary(failed_count, failed_by_ip):
     for ip, count in failed_by_ip.items():
         print(f"{ip}: {count}")
 
+
 def main():
-    #V1.3A: Initialize argument parser (CLI)
+    # V1.3A: Initialize argument parser (CLI)
     parser = argparse.ArgumentParser(description="Python Security Log Analyzer")
 
-    #V1.3B: Define the brute-force detection threshold 
+    # V1.3B: Define the brute-force detection threshold
     parser.add_argument("--threshold", type=int, default=3,
                         help="Failed login threshold (default: 3)")
 
-    #V1.3B: Define the detection time window (in minutes)
+    # V1.3B: Define the detection time window (in minutes)
     parser.add_argument("--window", type=int, default=5,
                         help="Detection window in minutes (default: 5)")
 
-    #V1.3B: Define the input log file path (optional)   
+    # V1.3B: Define the input log file path (optional)
     parser.add_argument("--file", type=str, default=None,
                         help="Path to authentication log file (default: sample_logs/login.log)")
 
-    #V1.3A: Parse command-line arguments
+    # V1.3A: Parse command-line arguments
     args = parser.parse_args()
 
     # Configuration variables
@@ -168,7 +178,7 @@ def main():
     if args.file:
         log_path = Path(args.file)
     else:
-        log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log" 
+        log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
 
     # Parse authentication logs
     try:
@@ -195,11 +205,17 @@ def main():
 
     # Execute brute force detection
     print(f"\n{args.window}-minute brute force detection:")
-    detect_brute_force(failed_times_by_ip, threshold, window)
+
+    # V1.4B-B: Capture brute-force detection results
+    detected_ips = detect_brute_force(failed_times_by_ip, threshold, window)
+
+    # V1.4B-B: Display collected security alerts
+    display_alerts(detected_ips)
 
     # V1.3C-E: Indicate successful execution
     return 0
 
-# V2.3C-E: Communicate process exit status
+
+# V1.3C-E: Communicate process exit status
 if __name__ == "__main__":
     raise SystemExit(main())
