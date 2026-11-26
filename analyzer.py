@@ -3,6 +3,9 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import argparse
 
+# V1.4C-A: Import CSV reporting module
+import csv
+
 
 def validate_config(threshold, window):
     # V1.2E: Validate configuration parameters
@@ -128,6 +131,27 @@ def display_alerts(detected_ips):
     for ip in detected_ips:
         print(f"Security Alert: Possible brute force attack detected from IP {ip}.")
 
+# V1.4C-A: Establish CSV report generation function
+def generate_csv_report(report_path, failed_by_ip, detected_ips):
+
+    # V1.4C-B: Initialize CSV report file
+    with open(report_path, "w", newline="", encoding="utf-8") as report_file:
+
+        # V1.4C-B: Establish CSV writer object
+        writer = csv.writer(report_file)
+
+        # V1.4C-B: Define CSV report column headers
+        writer.writerow(["source_ip", "failed_attempts", "brute_force_detected"])
+
+        # V1.4C-C: Iterate through failed authentication statistics
+        for ip, count in failed_by_ip.items():
+
+            # V1.4C-C: Determine brute-force detection status
+            brute_force_detected = ip in detected_ips
+
+            # V1.4C-C: Write authentication statistics to CSV report
+            writer.writerow([ip, count, brute_force_detected])
+
 
 def display_summary(failed_count, failed_by_ip):
     print("\nSummary of failed login attempts:")
@@ -138,7 +162,8 @@ def display_summary(failed_count, failed_by_ip):
         print(f"{ip}: {count}")
 
 
-def main():
+# V1.4C-D: Accept an optional CSV report destination
+def main(report_path=None):
     # V1.3A: Initialize argument parser (CLI)
     parser = argparse.ArgumentParser(description="Python Security Log Analyzer")
 
@@ -211,6 +236,13 @@ def main():
 
     # V1.4B-B: Display collected security alerts
     display_alerts(detected_ips)
+
+    # V1.4C-D: Generate CSV report when requested
+    if report_path is not None:
+        generate_csv_report(report_path, failed_by_ip, detected_ips)
+
+        # V1.4C-D: Confirm successful report generation
+        print(f"\nCSV report generated successfully: {report_path}")
 
     # V1.3C-E: Indicate successful execution
     return 0
