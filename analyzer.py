@@ -213,10 +213,24 @@ def main(report_path=None):
     else:
         log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
 
-    # V1.4D-B: Prevent overwriting the source authentication log
+    # V1.4E-B: Enhanced source-log and filesystem protection
     if report_path is not None:
-        if report_path.resolve() == log_path.resolve():
-            print("Report error: Report destination cannot match the source log file.")
+        try:
+
+            # Compare resolved filesystem paths
+            if report_path.resolve() == log_path.resolve():
+                print("Report error: Report destination cannot match the source log file.")
+                return 1
+
+            # Detect hard links referencing the source log
+            if report_path.exists() and log_path.exists():
+                if report_path.samefile(log_path):
+                    print("Report error: Report destination references the source log file.")
+                    return 1
+
+        # Handle filesystem path-validation exceptions
+        except (OSError, RuntimeError, ValueError) as error:
+            print(f"Report error: Unable to validate filesystem paths: {error}")
             return 1
 
     # Parse authentication logs
@@ -253,7 +267,30 @@ def main(report_path=None):
 
     # V1.4C-D: Generate CSV report when requested
     if report_path is not None:
-        generate_csv_report(report_path, failed_by_ip, detected_ips)
+
+    # V1.4E-A: Handle CSV export exceptions
+        try:
+            generate_csv_report(report_path, failed_by_ip, detected_ips)
+
+        except FileNotFoundError as error:
+            print(f"Report error: Destination directory not found: {error}")
+            return 1
+
+        except PermissionError as error:
+            print(f"Report error: Permission denied: {error}")
+            return 1
+
+        except IsADirectoryError as error:
+            print(f"Report error: Destination is a directory: {error}")
+            return 1
+
+        except OSError as error:
+            print(f"Report error: Unable to write CSV report: {error}")
+            return 1
+
+        except (csv.Error, ValueError) as error:
+            print(f"Report error: CSV export failed: {error}")
+            return 1
 
         # V1.4C-D: Confirm successful report generation
         print(f"\nCSV report generated successfully: {report_path}")
