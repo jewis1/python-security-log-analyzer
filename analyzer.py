@@ -179,8 +179,16 @@ def main(report_path=None):
     parser.add_argument("--file", type=str, default=None,
                         help="Path to authentication log file (default: sample_logs/login.log)")
 
+    # V1.4D-A: Define the optional CSV report destination
+    parser.add_argument("--report", type=str, default=None,
+                    help="Path to export CSV security report")
+
     # V1.3A: Parse command-line arguments
     args = parser.parse_args()
+
+    # V1.4D-B: Convert CLI report destination into a file path
+    if args.report is not None:
+        report_path = Path(args.report)
 
     # Configuration variables
     threshold = args.threshold
@@ -204,6 +212,12 @@ def main(report_path=None):
         log_path = Path(args.file)
     else:
         log_path = Path(__file__).resolve().parent / "sample_logs" / "login.log"
+
+    # V1.4D-B: Prevent overwriting the source authentication log
+    if report_path is not None:
+        if report_path.resolve() == log_path.resolve():
+            print("Report error: Report destination cannot match the source log file.")
+            return 1
 
     # Parse authentication logs
     try:
